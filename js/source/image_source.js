@@ -12,7 +12,9 @@ var RasterBoundsArray = require('../render/draw_raster').RasterBoundsArray;
 var Buffer = require('../data/buffer');
 var VertexArrayObject = require('../render/vertex_array_object');
 
-module.exports = ImageSource;
+module.exports.create = function (id, options, dispatcher) {
+    return new ImageSource(id, options, dispatcher);
+};
 
 /**
  * Create an Image source instance given an options object
@@ -48,6 +50,7 @@ function ImageSource(options) {
         }.bind(this));
 
         this._loaded = true;
+        this.fire('load');
 
         if (this.map) {
             this.setCoordinates(options.coordinates);
