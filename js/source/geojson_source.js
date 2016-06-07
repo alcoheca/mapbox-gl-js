@@ -91,7 +91,7 @@ GeoJSONSource.prototype = util.extend(Evented, /** @lends GeoJSONSource.prototyp
         return this;
     },
 
-    _updateData: function(cb) {
+    _updateData: function(callback) {
         this._dirty = false;
         var options = util.extend({
             source: this.id,
@@ -109,7 +109,7 @@ GeoJSONSource.prototype = util.extend(Evented, /** @lends GeoJSONSource.prototyp
         }
         this.workerID = this.dispatcher.send(this.type + '.parse', options, function(err) {
             this._loaded = true;
-            cb(err);
+            callback(err);
 
         }.bind(this));
     },
