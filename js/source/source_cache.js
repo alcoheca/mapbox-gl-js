@@ -127,7 +127,7 @@ SourceCache.prototype = util.inherit(Evented, {
         }
     },
 
-    _tileLoaded: function (tile, err, data) {
+    _tileLoaded: function (tile, err) {
         if (err) {
             tile.errored = true;
             this.fire('tile.error', {tile: tile, error: err});
@@ -136,9 +136,6 @@ SourceCache.prototype = util.inherit(Evented, {
 
         tile.source = this;
         this.fire('tile.load', {tile: tile});
-        if (data && data.bucketStats) {
-            this.fire('tile.stats', data.bucketStats);
-        }
     },
 
     /**
