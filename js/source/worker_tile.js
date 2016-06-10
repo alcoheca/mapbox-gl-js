@@ -182,10 +182,7 @@ WorkerTile.prototype.parse = function(data, layerFamilies, actor, rawTileData, c
     }
 
     function parseBucket(tile, bucket) {
-        var now = Date.now();
         bucket.populateBuffers(collisionTile, stacks, icons);
-        var time = Date.now() - now;
-
 
         if (bucket.type !== 'symbol') {
             for (var i = 0; i < bucket.features.length; i++) {
