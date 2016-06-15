@@ -14,6 +14,7 @@ var Dispatcher = require('../util/dispatcher');
 var AnimationLoop = require('./animation_loop');
 var validateStyle = require('./validate_style');
 var Source = require('../source/source');
+var QueryFeatures = require('../source/query-features');
 var SourceCache = require('../source/source_cache');
 var styleSpec = require('./style_spec');
 var StyleFunction = require('./style_function');
@@ -663,7 +664,7 @@ Style.prototype = util.inherit(Evented, {
         var sourceResults = [];
         for (var id in this.sources) {
             var source = this.sources[id];
-            var results = Source._queryRenderedVectorFeatures(source, this._layers, queryGeometry, params, zoom, bearing);
+            var results = QueryFeatures.rendered(source, this._layers, queryGeometry, params, zoom, bearing);
             sourceResults.push(results);
         }
         return this._flattenRenderedFeatures(sourceResults);
@@ -674,7 +675,7 @@ Style.prototype = util.inherit(Evented, {
             this._handleErrors(validateStyle.filter, 'querySourceFeatures.filter', params.filter, true);
         }
         var source = this.getSource(sourceID);
-        return source ? Source._querySourceFeatures(source, params) : [];
+        return source ? QueryFeatures.source(source, params) : [];
     },
 
     addSourceType: function (name, sourceFactoryFn, workerSourceURL, callback) {
