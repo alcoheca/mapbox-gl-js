@@ -905,7 +905,7 @@ test('Style#setLayerZoomRange', function(t) {
 test('Style#queryRenderedFeatures', function(t) {
     var style;
     var Style = proxyquire('../../../js/style/style', {
-        '../source/query-features': {
+        '../source/query_features': {
             rendered: function(source, layers, queryGeom, params) {
                 if (source.id !== 'mapbox') {
                     return [];
@@ -982,8 +982,6 @@ test('Style#queryRenderedFeatures', function(t) {
         style._applyClasses([]);
         style._recalculate(0);
 
-        // TODO: to fix this we can use proxyquire to mock
-        // Source._queryRenderedVectorFeatures.
         t.test('returns feature type', function(t) {
             var results = style.queryRenderedFeatures([{column: 1, row: 1, zoom: 1}], {}, 0, 0);
             t.equal(results[0].geometry.type, 'Line');
