@@ -83,6 +83,14 @@ SourceCache.prototype = util.inherit(Evented, {
         return true;
     },
 
+    /**
+     * @returns {Source} The underlying source object
+     * @private
+     */
+    getSource: function () {
+        return this._source;
+    },
+
     loadTile: function (tile, callback) {
         return this._source.loadTile(tile, callback);
     },

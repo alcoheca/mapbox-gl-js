@@ -381,7 +381,7 @@ Style.prototype = util.inherit(Evented, {
      * @private
      */
     getSource: function(id) {
-        return this.sources[id];
+        return this.sources[id] && this.sources[id].getSource();
     },
 
     /**
@@ -647,7 +647,7 @@ Style.prototype = util.inherit(Evented, {
         if (params && params.filter) {
             this._handleErrors(validateStyle.filter, 'querySourceFeatures.filter', params.filter, true);
         }
-        var source = this.getSource(sourceID);
+        var source = this.sources[sourceID];
         return source ? QueryFeatures.source(source, params) : [];
     },
 
@@ -703,7 +703,7 @@ Style.prototype = util.inherit(Evented, {
     },
 
     _forwardSourceEvent: function(e) {
-        this.fire('source.' + e.type, util.extend({source: e.target}, e));
+        this.fire('source.' + e.type, util.extend({source: e.target.getSource()}, e));
     },
 
     _forwardTileEvent: function(e) {
