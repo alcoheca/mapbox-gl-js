@@ -57,8 +57,13 @@ var defaultOptions = {
 };
 
 /**
- * @typedef {LngLat | Array<number>} LngLatLike
- * @typedef {LngLatBounds | Array<Array<number>> | Array<LngLat>} LngLatBoundsLike
+ * A [`LngLat`](#LngLat) object or an array of two numbers representing longitude and latitude.
+ * @typedef {(LngLat | Array<number>)} LngLatLike
+ * /
+
+/**
+ * A [`LngLatBounds`](#LngLatBounds) object or an array of [`LngLatLike`](#LngLatLike) objects.
+ * @typedef {(LngLatBounds | Array<LngLatLike>)} LngLatBoundsLike
  */
 
 /**
