@@ -57,6 +57,11 @@ var defaultOptions = {
 };
 
 /**
+ * @typedef {LngLat | Array<number>} LngLatLike
+ * @typedef {LngLatBounds | Array<Array<number>> | Array<LngLat>} LngLatBoundsLike
+ */
+
+/**
  * The `Map` object represents the map on your page. It exposes methods
  * and properties that enable you to programmatically change the map,
  * and fires events as users interact with it.
@@ -67,7 +72,7 @@ var defaultOptions = {
  *
  * @class Map
  * @param {Object} options
- * @param {Element|string} options.container The HTML element to initialize the map in, or the element's string `id`.
+ * @param {Element|string} options.container The HTML element in which Mapbox GL JS will render the map, or the element's string `id`.
  * @param {number} [options.minZoom=0] The minimum zoom of the map (1-20).
  * @param {number} [options.maxZoom=20] The maximum zoom of the map (1-20).
  * @param {Object|string} [options.style] The map's style. This must be an a JSON object conforming to the schema described in
@@ -89,7 +94,7 @@ var defaultOptions = {
  * @param {boolean} [options.attributionControl=true] If `true`, an attribution control will be added to the map.
  * @param {boolean} [options.failIfMajorPerformanceCaveat=false] If `true`, map creation will fail if the implementation determines that the performance of the created WebGL context would be dramatically lower than expected.
  * @param {boolean} [options.preserveDrawingBuffer=false] If `true`, the map's canvas can be exported to a PNG using `map.getCanvas().toDataURL();`. This is `false` by default as a performance optimization.
- * @param {LngLatBounds|Array<Array<number>>} [options.maxBounds] If set, the map is constrained to the given bounds. // TODO: Can LngLatBounds be like LngLat, standing in for Array<Array<string>>
+ * @param {LngLatBoundsLike} [options.maxBounds] If set, the map is constrained to the given bounds.
  * @param {boolean} [options.scrollZoom=true] If `true`, the "scroll to zoom" interaction is enabled (see [`ScrollZoomHandler`](#ScrollZoomHandler)).
  * @param {boolean} [options.boxZoom=true] If `true`, the "box zoom" interaction is enabled (see [`BoxZoomHandler`](#BoxZoomHandler)).
  * @param {boolean} [options.dragRotate=true] If `true`, the "drag to rotate" interaction is enabled (see [`DragRotateHandler`](#DragRotateHandler)).
@@ -98,10 +103,10 @@ var defaultOptions = {
  * @param {boolean} [options.doubleClickZoom=true] If `true`, the "double click to zoom" interaction is enabled (see [`DoubleClickZoomHandler`](#DoubleClickZoomHandler)).
  * @param {boolean} [options.touchZoomRotate=true] If `true`, the "pinch to rotate and zoom" interaction is enabled (see [`TouchZoomRotateHandler`](#TouchZoomRotateHandler)).
  * @param {boolean} [options.trackResize=true]  If `true`, the map will automatically resize when the browser window resizes.
- * @param {LngLat} [options.center] The geographic coordinate on which the map's initial viewport is centered. TODO: What is default?
- * @param {number} [options.zoom] The zoom level of the map's initial viewport. TODO: What is default?
- * @param {number} [options.bearing] The bearing (rotation) of the map's initial viewport, measured in degrees counter-clockwise from north. TODO: What is default?
- * @param {number} [options.pitch] The pitch of the map's initial viewport, measured in degrees. TODO: What is default?
+ * @param {LngLatLike} [options.center=[0, 0]] The geographic coordinate on which the map's initial viewport is centered. If `center` is not specific in `Map` constructor options, Mapbox GL JS will look for it in the map's style. If it is not specified in the style, it will default to `[0, 0]`.
+ * @param {number} [options.zoom=0] The zoom level of the map's initial viewport. If `zoom` is not specific in `Map` constructor options, Mapbox GL JS will look for it in the map's style. If it is not specified in the style, it will default to `0`.
+ * @param {number} [options.bearing=0] The bearing (rotation) of the map's initial viewport, measured in degrees counter-clockwise from north. If `bearing` is not specific in `Map` constructor options, Mapbox GL JS will look for it in the map's style. If it is not specified in the style, it will default to `0`.
+ * @param {number} [options.pitch=0] The pitch of the map's initial viewport, measured in degrees. If `pitch` is not specific in `Map` constructor options, Mapbox GL JS will look for it in the map's style. If it is not specified in the style, it will default to `0`.
  * @param {number} [options.workerCount=navigator.hardwareConcurrency - 1] The number of WebWorkers the map should use to process vector tile data.
  * @example
  * var map = new mapboxgl.Map({
