@@ -42,6 +42,9 @@ function SourceCache(id, options, dispatcher) {
 
         this.fire('load');
     }.bind(this))
+    .on('error', function () {
+        this._sourceErrored = true;
+    }.bind(this))
     .on('change', function () {
         this.reload();
         if (this.transform) {
@@ -75,6 +78,7 @@ SourceCache.prototype = util.inherit(Evented, {
      * @private
      */
     loaded: function() {
+        if (this._sourceErrored) { return true; }
         if (!this._sourceLoaded) { return false; }
         for (var t in this._tiles) {
             if (!this._tiles[t].loaded && !this._tiles[t].errored)
