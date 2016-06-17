@@ -67,6 +67,11 @@ var defaultOptions = {
  */
 
 /**
+ * An object with `x` and `y` properties representing coordinates.
+ * @typedef {Object} Point
+ */
+
+/**
  * The `Map` object represents the map on your page. It exposes methods
  * and properties that enable you to programmatically change the map,
  * and fires events as users interact with it.
@@ -217,7 +222,7 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     /**
      * Adds a control to the map, calling `control.addTo(this)`.
      *
-     * @param {Control} control
+     * @param {Control} control Control to add.
      * @returns {Map} `this`
      */
     addControl: function(control) {
@@ -226,9 +231,9 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Adds a style class to a map.
+     * Adds a style class to the map.
      *
-     * @param {string} klass name of style class
+     * @param {string} klass Style class to add.
      * @param {StyleOptions} [options]
      * @fires change
      * @returns {Map} `this`
@@ -243,9 +248,9 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Removes a style class from a map.
+     * Removes a style class from the map.
      *
-     * @param {string} klass name of style class
+     * @param {string} klass Style class to remove.
      * @param {StyleOptions} [options]
      * @fires change
      * @returns {Map} `this`
@@ -261,9 +266,9 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Helper method to add more than one class.
+     * Replaces the map's existing style classes with a new array of classes.
      *
-     * @param {Array<string>} klasses An array of class names
+     * @param {Array<string>} klasses Style classes to set.
      * @param {StyleOptions} [options]
      * @fires change
      * @returns {Map} `this`
@@ -281,30 +286,31 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Check whether a style class is active.
+     * Returns a Boolean indicating whether the map has the
+     * specified style class.
      *
-     * @param {string} klass Name of style class
-     * @returns {boolean}
+     * @param {string} klass Style class to test.
+     * @returns {boolean} `true` if the map has the specified style class.
      */
     hasClass: function(klass) {
         return this._classes.indexOf(klass) >= 0;
     },
 
     /**
-     * Return an array of the current active style classes.
+     * Returns the map's style classes.
      *
-     * @returns {boolean}
+     * @returns {Array<string>} The map's style classes.
      */
     getClasses: function() {
         return this._classes;
     },
 
     /**
-     * Detect the map's new width and height and resize it. Given
-     * the `container` of the map specified in the Map constructor,
-     * this reads the new width from the DOM: so this method is often
-     * called after the map's container is resized by another script
-     * or the map is shown after being initially hidden with CSS.
+     * Resizes the map according to the dimensions of its
+     * `container` element.
+     *
+     * This method is often called after the map's `container` is resized by another script,
+     * or when the map is shown after being initially hidden with CSS.
      *
      * @returns {Map} `this`
      */
@@ -328,9 +334,9 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Get the map's geographical bounds.
+     * Returns the map's geographical bounds.
      *
-     * @returns {LngLatBounds}
+     * @returns {LngLatBounds} The map's geographical bounds.
      */
     getBounds: function() {
         var bounds = new LngLatBounds(
@@ -346,11 +352,16 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Set constraint on the map's geographical bounds. Pan or zoom operations that would result in
-     * displaying regions that fall outside of the bounds instead result in displaying the map at the
-     * closest point and/or zoom level of the requested operation that is within the max bounds.
+     * Sets or clears the map's geographical bounds.
      *
-     * @param {LngLatBounds | Array<Array<number>> | null | undefined} lnglatbounds Desired max bounds of the map. If null or undefined, function removes any bounds constraints on the map.
+     * Pan and zoom operations are constrained within these bounds.
+     * If a pan or zoom is performed that would
+     * display regions falling outside these bounds, the map will
+     * instead display a position and zoom level
+     * as close as possible to the operation's request while still
+     * remaining within the bounds.
+     *
+     * @param {LngLatBoundsLike | null | undefined} lnglatbounds Max bounds to set. If `null` or `undefined` is provided, the function removes the map's maximum bounds.
      * @returns {Map} `this`
      */
     setMaxBounds: function (lnglatbounds) {
@@ -369,11 +380,11 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
 
     },
     /**
-     * Set the map's minimum zoom level, and zooms map to that level if it is
-     * currently below it. If no parameter provided, unsets the current
-     * minimum zoom (sets it to 0)
+     * Sets or clears the map's minimum zoom level, and zooms the map to that level
+     * if the map's current zoom level is lower than it.
      *
-     * @param {number} minZoom Minimum zoom level. Must be between 0 and 20.
+     * @param {number | null | undefined} minZoom Minimum zoom level to set. Must be between 0 and 20.
+     *   If`null` or `undefined` is provided, the function removes the current minimum zoom (sets it to 0).
      * @returns {Map} `this
      */
     setMinZoom: function(minZoom) {
@@ -392,10 +403,11 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Set the map's maximum zoom level, and zooms map to that level if it is
-     * currently above it. If no parameter provided, unsets the current
-     * maximum zoom (sets it to 20)
-     * @param {number} maxZoom Maximum zoom level. Must be between 0 and 20.
+     * Sets or clears the map's maximum zoom level, and zooms the map to that level if
+     * the map's current zoom level is higher than it.
+     *
+     * @param {number} maxZoom Maximum zoom level to set. Must be between 0 and 20.
+     *   If`null` or `undefined` is provided, the function removes the current maximum zoom (sets it to 20).
      * @returns {Map} `this`
      */
     setMaxZoom: function(maxZoom) {
@@ -413,11 +425,11 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
         } else throw new Error('maxZoom must be between the current minZoom and ' + defaultMaxZoom + ', inclusive');
     },
     /**
-     * Get pixel coordinates relative to the map container, given a geographical
-     * location.
+     * Returns an object containing pixel coordinates, relative to the map's `container`,
+     * corresponding to the specified geographical location.
      *
-     * @param {LngLat} lnglat
-     * @returns {Object} `x` and `y` coordinates
+     * @param {LngLatLike} lnglat Geographical location.
+     * @returns {Point} Point containing `x` and `y` coordinates relative to the map's `container`.
      */
     project: function(lnglat) {
         return this.transform.locationPoint(LngLat.convert(lnglat));
