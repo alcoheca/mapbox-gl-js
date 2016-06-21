@@ -54,10 +54,12 @@ toc:
   - EventData
   - Evented
   - name: Custom Sources
-    descriptions: |
+    description: |
       These interfaces and methods allow you to create and use third-party data
-      sources.  See also Map#addSourceType
+      sources.  See also [Map#addSourceType](#Map#addSourceType)
   - Source
   - WorkerSource
   - CreateSourceFunction
+  - Dispatcher
+  - GeoJSONWorkerSource
 
