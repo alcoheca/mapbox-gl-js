@@ -67,9 +67,14 @@ var defaultOptions = {
  */
 
 /**
- * An object with `x` and `y` properties representing coordinates.
+ * A [Point geometry](https://github.com/mapbox/point-geometry) with `x` and `y` properties representing coordinates and a variety of useful methods.
  * @typedef {Object} Point
  */
+
+ /**
+  * A [Point](#Point) or an array of two numbers representing `x` and `y` coordinates.
+  * @typedef {(Point | Array<number>)} PointLike
+  */
 
 /**
  * The `Map` object represents the map on your page. It exposes methods
@@ -425,43 +430,48 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
         } else throw new Error('maxZoom must be between the current minZoom and ' + defaultMaxZoom + ', inclusive');
     },
     /**
-     * Returns an object containing pixel coordinates, relative to the map's `container`,
+     * Returns a [Point](#Point) containing pixel coordinates, relative to the map's `container`,
      * corresponding to the specified geographical location.
      *
      * @param {LngLatLike} lnglat Geographical location.
-     * @returns {Point} Point containing `x` and `y` coordinates relative to the map's `container`.
+     * @returns {Point} Point corresponding to `lnglat`, relative to the map's `container`.
      */
     project: function(lnglat) {
         return this.transform.locationPoint(LngLat.convert(lnglat));
     },
 
     /**
-     * Get geographical coordinates, given pixel coordinates.
+     * Returns a [LngLat[(#LngLat) containing geographical coordinates cooresponding
+     * to the specified pixel coordinates.
      *
-     * @param {Array<number>} point [x, y] pixel coordinates
-     * @returns {LngLat}
+     * @param {PointLike} point Pixel coordinates.
+     * @returns {LngLat} LngLat corresponding to `point`.
      */
     unproject: function(point) {
         return this.transform.pointLocation(Point.convert(point));
     },
 
     /**
-     * Query rendered features at a point or within a rectangle.
+     * Returns an array of [GeoJSON](http://geojson.org/)
+     * [Feature objects](http://geojson.org/geojson-spec.html#feature-objects)
+     * representing visible features within the specified region that satisfy the query parameters.
      *
-     * @param {Point|Array<number>|Array<Point>|Array<Array<number>>} [pointOrBox] - The geometry of a query region:
+     * @param {PointLike>|Array<PointLink>} [region] - The geometry of the query region:
      * either [x, y] pixel coordinates of a point, or [[x1, y1], [x2, y2]] pixel coordinates of opposite corners of
      * a bounding rectangle. Omitting this parameter (i.e. calling `queryRenderedFeatures` with zero arguments,
-     * or with a single `params` argument), is equivalent to passing a bounding rectangle encompassing the entire
-     * viewport.
-     * @param {Object} [params]
-     * @param {Array<string>} [params.layers] Only query features from layers with these layer IDs.
-     * @param {Array} [params.filter] A [filter](https://www.mapbox.com/mapbox-gl-style-spec/#types-filter).
+     * or with only a `params` argument) is equivalent to passing a bounding rectangle encompassing the entire
+     * map viewport.
+     * @param {Object} [parameters]
+     * @param {Array<string>} [parameters.layers] An array of layer IDs for the query to check.
+     *   Only features within these layers will be returned. If this parameter is empty, all layers will be checked.
+     * @param {Array} [parameters.filter] A [filter](https://www.mapbox.com/mapbox-gl-style-spec/#types-filter)
+     *   to limit query results.
      *
      * @returns {Array<Object>} An array of [GeoJSON](http://geojson.org/)
-     * [Feature objects](http://geojson.org/geojson-spec.html#feature-objects) satisfying the query parameters.
+     * [Feature objects](http://geojson.org/geojson-spec.html#feature-objects).
      *
-     * The `properties` value of each feature contains the properties of the source feature. For GeoJSON sources, only
-     * string and numeric values are supported; null, Array, and Object values are not supported.
+     * The `properties` value of each returned feature contains the properties of its source feature. For GeoJSON sources, only
+     * string and numeric property values are supported (i.e. `null`, `Array`, and `Object` values are not supported).
      *
      * Each feature includes a top-level `layer` property whose value is an object representing the style layer to
      * which the feature belongs. Layout and paint properties in this object contain values which are fully evaluated
@@ -469,7 +479,7 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
      *
      * Only visible features are returned. The topmost rendered feature appears first in the returned array, and
      * subsequent features are sorted by descending z-order. Features which are rendered multiple times due to wrapping
-     * across the antimeridian at low zoom levels are returned only once, subject to the caveat that follows.
+     * across the antimeridian at low zoom levels are returned only once, subject to the following caveat.
      *
      * Because features come from tiled vector data or GeoJSON data that is converted to tiles internally, feature
      * geometries are clipped at tile boundaries and features may appear duplicated across tiles. For example, suppose
@@ -547,19 +557,22 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Query data from vector tile or GeoJSON sources.
+     * Returns an array of [GeoJSON](http://geojson.org/)
+     * [Feature objects](http://geojson.org/geojson-spec.html#feature-objects)
+     * representing visible features within the specified vector tile or GeoJSON source that satisfy the query parameters.
      *
-     * @param {string} sourceID source ID
+     * @param {string} sourceID The ID of the vector tile or GeoJSON source to query.
      * @param {Object} params
-     * @param {string} [params.sourceLayer] The name of the vector tile layer to get features from. For vector tile
-     * sources, this parameter is required. For GeoJSON sources, it is ignored.
-     * @param {Array} [params.filter] A [filter](https://www.mapbox.com/mapbox-gl-style-spec/#types-filter).
+     * @param {string} [params.sourceLayer] The name of the vector tile layer to query. *For vector tile
+     *   sources, this parameter is required.* For GeoJSON sources, it is ignored.
+     * @param {Array} [params.filter] A [filter](https://www.mapbox.com/mapbox-gl-style-spec/#types-filter)
+     *   to limit query results.
      *
      * @returns {Array<Object>} An array of [GeoJSON](http://geojson.org/)
-     * [Feature objects](http://geojson.org/geojson-spec.html#feature-objects) satisfying the query parameters.
+     * [Feature objects](http://geojson.org/geojson-spec.html#feature-objects).
      *
      * In contrast to `queryRenderedFeatures`, `querySourceFeatures` returns all features matching the query parameters,
-     * whether they are rendered by the current style or not. The domain of the query consists of all currently-loaded
+     * whether they are rendered by the current style (i.e. visible) or not. The domain of the query consists of all currently-loaded
      * vector tile or GeoJSON source tiles; `querySourceFeatures` does not load additional tiles beyond the currently
      * visible viewport.
      *
@@ -574,11 +587,12 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Replaces the map's style object with a new value. Unlike the `style`
-     * option in the Map constructor, this method only accepts an object
+     * Replaces the map's style object with a new value.
+     *
+     * Unlike the `style` option in the Map constructor, this method only accepts an object
      * of a new style, not a URL string.
      *
-     * @param {Object} style A style object formatted as JSON
+     * @param {Object} style A style object formatted as JSON.
      * @returns {Map} `this`
      */
     setStyle: function(style) {
@@ -640,9 +654,9 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Get a style object that can be used to recreate the map's style.
+     * Returns the map's style object, which can be used to recreate the map's style.
      *
-     * @returns {Object} style
+     * @returns {Object} The map's style object.
      */
     getStyle: function() {
         if (this.style) {
@@ -651,11 +665,11 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Add a source to the map style.
+     * Adds a source to the map's style.
      *
-     * @param {string} id ID of the source. Must not be used by any existing source.
-     * @param {Object} source source specification, following the
-     * [Mapbox GL Style Reference](https://www.mapbox.com/mapbox-gl-style-spec/#sources)
+     * @param {string} id ID of the source to add. Must not conflict with existing sources.
+     * @param {Object} source The source object, satisfying the
+     * [Mapbox GL Style Reference specification](https://www.mapbox.com/mapbox-gl-style-spec/#sources).
      * @fires source.add
      * @returns {Map} `this`
      */
@@ -666,9 +680,9 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Remove an existing source from the map style.
+     * Removes a source from the map's style.
      *
-     * @param {string} id ID of the source to remove
+     * @param {string} id ID of the source to remove.
      * @fires source.remove
      * @returns {Map} `this`
      */
@@ -679,26 +693,28 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Return the style source object with the given `id`.
+     * Returns the source with the specified ID.
      *
-     * @param {string} id source ID
-     * @returns {Object}
+     * @param {string} id ID of the source to get.
+     * @returns {?Object} The style source with the specified ID, or `undefined`
+     *   if the ID corresponds to no existing sources.
      */
     getSource: function(id) {
         return this.style.getSource(id);
     },
 
     /**
-     * Add a [Mapbox GL style layer](https://www.mapbox.com/mapbox-gl-style-spec/#layers)
-     * to the map. A layer references a source from which it pulls data and specifies
-     * styling for that data.
+     * Adds a [Mapbox GL style layer](https://www.mapbox.com/mapbox-gl-style-spec/#layers)
+     * to the map's style.
      *
-     * If a value for `before` is provided, the layer will be inserted before the layer
-     * with the specified ID. If `before` is omitted, the layer will be inserted above
+     * A layer specifies styling for data from a specified source.
+     *
+     * If a `before` value is provided, the new layer will be inserted before the layer
+     * with the specified ID. If `before` is omitted, the layer will be inserted before
      * every existing layer.
      *
-     * @param {StyleLayer|Object} layer
-     * @param {string=} before  ID of an existing layer to insert before
+     * @param {Object} layer The style layer to add.
+     * @param {string} [before] ID of an existing layer to insert the new layer before.
      * @fires layer.add
      * @returns {Map} `this`
      */
@@ -709,10 +725,12 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Remove the layer with the given `id` from the map. Any layers which refer to the
-     * specified layer via a `ref` property are also removed.
+     * Removes a layer from the map's style.
      *
-     * @param {string} id layer id
+     * Also removes any layers which refer to the specified layer via a
+     * [`ref` property](https://www.mapbox.com/mapbox-gl-style-spec/#layer-ref).
+     *
+     * @param {string} id ID of the layer to remove.
      * @throws {Error} if no layer with the given `id` exists
      * @fires layer.remove
      * @returns {Map} `this`
@@ -724,10 +742,11 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
     },
 
     /**
-     * Return the style layer object with the given `id`.
+     * Returns the layer with the specified ID.
      *
-     * @param {string} id layer id
-     * @returns {?Object} a layer, if one with the given `id` exists
+     * @param {string} id ID of the layer to get.
+     * @returns {?Object} The layer with the specified ID, or `undefined`
+     *   if the ID corresponds to no existing layers.
      */
     getLayer: function(id) {
         return this.style.getLayer(id);
