@@ -628,8 +628,9 @@ util.extend(Map.prototype, /** @lends Map.prototype */{
      * Add a source to the map style.
      *
      * @param {string} id ID of the source. Must not be used by any existing source.
-     * @param {Object} source source specification, following the
-     * [Mapbox GL Style Reference](https://www.mapbox.com/mapbox-gl-style-spec/#sources)
+     * @param {Object} source source options, following the
+     * [Style Specification](https://www.mapbox.com/mapbox-gl-style-spec/#sources)
+     * @param {string} source.type The source type, which must be either one of the core Mapbox GL source types defined in the style specification or a custom type that has been added to the map with {@link Map#addSourceType}.
      * @fires source.add
      * @returns {Map} `this`
      */

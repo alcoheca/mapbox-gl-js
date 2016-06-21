@@ -10,19 +10,14 @@ module.exports.create = function (id, options, dispatcher) {
 };
 
 /**
- * Create a GeoJSON data source instance given an options object
- * @class GeoJSONSource
- * @param {Object} [options]
- * @param {Object|string} options.data A GeoJSON data object or URL to it. The latter is preferable in case of large GeoJSON files.
- * @param {number} [options.maxzoom=18] Maximum zoom to preserve detail at.
- * @param {number} [options.buffer] Tile buffer on each side in pixels.
- * @param {number} [options.tolerance] Simplification tolerance (higher means simpler) in pixels.
- * @param {number} [options.cluster] If the data is a collection of point features, setting this to true clusters the points by radius into groups.
- * @param {number} [options.clusterRadius=50] Radius of each cluster when clustering points, in pixels.
- * @param {number} [options.clusterMaxZoom] Max zoom to cluster points on. Defaults to one zoom less than `maxzoom` (so that last zoom features are not clustered).
-
+ * A data source for GeoJSON data.
+ * (See the [Style Specification](https://www.mapbox.com/mapbox-gl-style-spec/#sources-geojson) for detailed documentation of options.)
+ *
+ * @interface GeoJSONSource
  * @example
- * var sourceObj = new mapboxgl.GeoJSONSource({
+ * // add
+ * map.addSource('some id', {
+ *    type: 'geojson',
  *    data: {
  *        "type": "FeatureCollection",
  *        "features": [{
@@ -37,7 +32,23 @@ module.exports.create = function (id, options, dispatcher) {
  *        }]
  *    }
  * });
- * map.addSource('some id', sourceObj); // add
+ *
+ * // update
+ * var mySource = map.getSource('some id');
+ * mySource.setData({
+ *     data: {
+ *        "type": "FeatureCollection",
+ *        "features": [{
+ *            "type": "Feature",
+ *            "properties": { "name": "Null Island" },
+ *            "geometry": {
+ *                "type": "Point",
+ *                "coordinates": [ 0, 0 ]
+ *            }
+ *        }]
+ *     }
+ * })
+ *
  * map.removeSource('some id');  // remove
  */
 function GeoJSONSource(id, options, dispatcher) {
@@ -98,7 +109,7 @@ GeoJSONSource.prototype = util.inherit(Evented, /** @lends GeoJSONSource.prototy
     },
 
     /**
-     * Update source geojson data and rerender map
+     * Update source geojson data and rerender map.
      *
      * @param {Object|string} data A GeoJSON data object or URL to it. The latter is preferable in case of large GeoJSON files.
      * @returns {GeoJSONSource} this

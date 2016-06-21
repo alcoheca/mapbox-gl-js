@@ -16,25 +16,34 @@ module.exports.create = function (id, options, dispatcher) {
 };
 
 /**
- * Create a Video data source instance given an options object
- * @class VideoSource
- * @param {Object} options
- * @param {Array<string>} options.urls An array of URLs to video files
- * @param {Array} options.coordinates Four geographical [lng, lat] coordinates in clockwise order defining the corners (starting with top left) of the video. Does not have to be a rectangle.
+ * A data source for videos.
+ * (See the [Style Specification](https://www.mapbox.com/mapbox-gl-style-spec/#sources-video) for detailed documentation of options.)
+ * @interface VideoSource
  * @example
- * var sourceObj = new mapboxgl.VideoSource({
+ * // add to map
+ * map.addSource('some id', {
+ *    type: 'video',
  *    url: [
  *        'https://www.mapbox.com/videos/baltimore-smoke.mp4',
  *        'https://www.mapbox.com/videos/baltimore-smoke.webm'
  *    ],
  *    coordinates: [
- *        [-76.54335737228394, 39.18579907229748],
- *        [-76.52803659439087, 39.1838364847587],
- *        [-76.5295386314392, 39.17683392507606],
- *        [-76.54520273208618, 39.17876344106642]
+ *        [-76.54, 39.18],
+ *        [-76.52, 39.18],
+ *        [-76.52, 39.17],
+ *        [-76.54, 39.17]
  *    ]
  * });
- * map.addSource('some id', sourceObj); // add
+ *
+ * // update
+ * var mySource = map.getSource('some id');
+ * mySource.setCoordinates([
+ *     [-76.54335737228394, 39.18579907229748],
+ *     [-76.52803659439087, 39.1838364847587],
+ *     [-76.5295386314392, 39.17683392507606],
+ *     [-76.54520273208618, 39.17876344106642]
+ * ]);
+ *
  * map.removeSource('some id');  // remove
  */
 function VideoSource(id, options) {
